@@ -26,75 +26,86 @@ uart:
 
 #Multical Custom Sensor (first variable is update interval in ms; 3600000 is 1 hour)
 custom_component:
-  - lambda: |-
-      auto my_sensor = new Multical401(3600000, id(uart_tx), id(uart_rx), id(m_energy), id(m_volume), id(m_tin), id(m_tout), id(m_tdiff), id(m_power), id(m_flow), id(m_status));
-      App.register_component(my_sensor);
-      return {my_sensor};
+- lambda: |-
+    auto my_sensor = new Multical401(3600000, id(uart_tx), id(uart_rx), id(m_energy), id(m_volume), id(m_tin), id(m_tout), id(m_tdiff), id(m_power), id(m_flow), id(m_status));
+    App.register_component(my_sensor);
+    return {my_sensor};
+  components:
+    - id: multical 
 
 sensor:
 #Multical Custom Sensors      
-  - name: "Multical Energy"
-    platform: template
-    id: m_energy
-    icon: "mdi:lightning-bolt"
-    unit_of_measurement: kWh
-    accuracy_decimals: 5
-    state_class: "measurement"
-    device_class: "energy" 
-    force_update: true
+- name: "Multical Energy"
+  platform: template
+  id: m_energy
+  icon: "mdi:lightning-bolt"
+  unit_of_measurement: kWh
+  accuracy_decimals: 3
+  state_class: "total_increasing"
+  device_class: "energy" 
+  force_update: true
 
-  - name: "Multical Volume"
-    platform: template
-    id: m_volume
-    unit_of_measurement: m3
-    accuracy_decimals: 1
-    state_class: "measurement"
+- name: "Multical Volume"
+  platform: template
+  id: m_volume
+  unit_of_measurement: m³
+  accuracy_decimals: 3
+  state_class: "measurement"
 
-  - name: "Multical Temperature In"
-    platform: template
-    id: m_tin
-    icon: "mdi:thermometer"
-    unit_of_measurement: °C
-    accuracy_decimals: 1
-    state_class: "measurement"
-    device_class: "temperature"
+- name: "Multical Temperature In"
+  platform: template
+  id: m_tin
+  icon: "mdi:thermometer"
+  unit_of_measurement: °C
+  accuracy_decimals: 1
+  state_class: "measurement"
+  device_class: "temperature"
 
-  - name: "Multical Temperature Out"
-    platform: template
-    id: m_tout
-    icon: "mdi:thermometer"
-    unit_of_measurement: °C
-    accuracy_decimals: 1
-    state_class: "measurement"
-    device_class: "temperature"
+- name: "Multical Temperature Out"
+  platform: template
+  id: m_tout
+  icon: "mdi:thermometer"
+  unit_of_measurement: °C
+  accuracy_decimals: 1
+  state_class: "measurement"
+  device_class: "temperature"
 
-  - name: "Multical Temperatue Diff"
-    platform: template
-    id: m_tdiff
-    icon: "mdi:thermometer"
-    unit_of_measurement: °C
-    accuracy_decimals: 1
-    state_class: "measurement"
-    device_class: "temperature"
+- name: "Multical Temperature Diff"
+  platform: template
+  id: m_tdiff
+  icon: "mdi:thermometer"
+  unit_of_measurement: °C
+  accuracy_decimals: 1
+  state_class: "measurement"
+  device_class: "temperature"
 
-  - name: "Multical Power"
-    platform: template
-    id: m_power
-    icon: "mdi:flash"
-    unit_of_measurement: kW
-    accuracy_decimals: 1
-    state_class: "measurement"
-    device_class: "power"
+- name: "Multical Power"
+  platform: template
+  id: m_power
+  icon: "mdi:flash"
+  unit_of_measurement: kW
+  accuracy_decimals: 1
+  state_class: "measurement"
+  device_class: "power"
 
-  - name: "Multical Flow"
-    platform: template
-    id: m_flow
-    unit_of_measurement: l/h
-    accuracy_decimals: 1    
-    state_class: "measurement"  
+- name: "Multical Flow"
+  platform: template
+  id: m_flow
+  unit_of_measurement: l/h
+  accuracy_decimals: 1    
+  state_class: "measurement"
 
 text_sensor:  
 #Multical Custom Sensors      
-  - name: "Multical Last Status"
-    platform: template
-    id: m_status  
+- name: "Multical Last Status"
+  platform: template
+  id: m_status    
+
+button:
+- platform: template
+  name: ${friendly_name} Manually update Multical reading
+  icon: mdi:update
+  id: update_multical
+  on_press:
+    - logger.log: "Button pressed"   
+    - lambda: 'static_cast<Multical401 *>(multical)->update();'

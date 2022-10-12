@@ -9,6 +9,10 @@ esphome:
   includes:
     - multical401.h
 
+# Disable UART for logger:
+logger:
+  baud_rate: 0
+
 #Multical UART, 2 instances due to different baud-rates.
 uart:
   - rx_pin: D1

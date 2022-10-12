@@ -1,5 +1,5 @@
 #include "esphome.h"
-
+#include "esphome/core/component.h"
 
 class Multical401 : public PollingComponent, public UARTDevice {
  public:
@@ -18,11 +18,11 @@ class Multical401 : public PollingComponent, public UARTDevice {
     _rx = new UARTDevice(uart_rx);
   }
 
-  void setup() override {
-    
-  }
+  void setup() override { }
 
   void update() override {
+
+    ESP_LOGD("multical", "Start update"); 
 
     byte sendmsg1[] = { 175,163,177 };            //   /#1 with even parity
     
@@ -35,7 +35,7 @@ class Multical401 : public PollingComponent, public UARTDevice {
     for (int x = 0; x < 3; x++) {
       _tx->write(sendmsg1[x]);
     }
-    
+
     to = 0;
     r = 0;
     i = 0;
@@ -53,12 +53,11 @@ class Multical401 : public PollingComponent, public UARTDevice {
         r = _rx->read();
         if (parity_check(r))
         {
-           parityerrors += 1;
+          parityerrors += 1;
         }
         r = r & 127; // Mask MSB to remove parity
 
-        message[i++] = char(r);
-        // ESP_LOGD("multical", "Rec: %f", char(r));                 
+        message[i++] = char(r);                
         
       }
       else
@@ -78,53 +77,52 @@ class Multical401 : public PollingComponent, public UARTDevice {
           tmpstr = strtok(message, " ");
           
           if (tmpstr)
-           //Convert to kWh
-           m_energy = atol(tmpstr)/3.6;
+           // m_energy = atol(tmpstr)/1000.0;
+            m_energy = atol(tmpstr)/3.6;
           else
-           m_energy = 0;
+            m_energy = 0;
 
           tmpstr = strtok(NULL, " ");
           if (tmpstr)
-           m_volume = atol(tmpstr)/100.0;
+            m_volume = atol(tmpstr)/100.0;
           else
-           m_volume = 0;
+            m_volume = 0;
 
           tmpstr = strtok(NULL, " ");
           if (tmpstr)
-           m_hours = atol(tmpstr);
+            m_hours = atol(tmpstr);
           else
-           m_hours = 0;
+            m_hours = 0;
   
           tmpstr = strtok(NULL, " ");
           if (tmpstr)
-           m_tempin = atol(tmpstr)/100.0;
+            m_tempin = atol(tmpstr)/100.0;
           else
-           m_tempin = 0;
+            m_tempin = 0;
 
           tmpstr = strtok(NULL, " ");
           if (tmpstr)
-           m_tempout = atol(tmpstr)/100.0;
+            m_tempout = atol(tmpstr)/100.0;
           else
-           m_tempout = 0;
+            m_tempout = 0;
 
           tmpstr = strtok(NULL, " ");
           if (tmpstr)
-           m_tempdiff = atol(tmpstr)/100.0;
+            m_tempdiff = atol(tmpstr)/100.0;
           else
-           m_tempdiff = 0;
+            m_tempdiff = 0;
 
           tmpstr = strtok(NULL, " ");
           if (tmpstr)
-           m_power = atol(tmpstr)/10.0;
+            m_power = atol(tmpstr)/10.0;
           else
-           m_power = 0;
+            m_power = 0;
 
           tmpstr = strtok(NULL, " ");
           if (tmpstr)
-           m_flow = atol(tmpstr);
+            m_flow = atol(tmpstr);
           else
-           m_flow = 0;    
-               
+            m_flow = 0;    
 
           ESP_LOGD("multical", "Energy: %f kWh", m_energy);  
 
@@ -152,7 +150,6 @@ class Multical401 : public PollingComponent, public UARTDevice {
           sensor_power->publish_state(m_power);
           sensor_flow->publish_state(m_flow);
           
-         
         }
         else
         {
@@ -178,7 +175,7 @@ class Multical401 : public PollingComponent, public UARTDevice {
   bool parity_check(unsigned input) {
     bool inputparity = input & 128;
     int x = input & 127;
- 
+
     int parity = 0;
     while(x != 0) {
         parity ^= x;
@@ -196,4 +193,3 @@ class Multical401 : public PollingComponent, public UARTDevice {
 
 
 };
-

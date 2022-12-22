@@ -1,5 +1,6 @@
-# esphome_multical401
-Multical 401 custom sensor for ESPhome
+# ESPHome component for Multical 401 and Multical MC66C.
+Multical 401 custom sensor for ESPhome.
+Also works with Multical MC66C, needs some changes in ESPhome config (uart settings, see YAML)
 
 Readout via IR-head; see references.
 

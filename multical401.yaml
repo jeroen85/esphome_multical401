@@ -26,7 +26,12 @@ uart:
     data_bits: 8
     parity: NONE
     stop_bits: 1
-    id: uart_tx    
+    id: uart_tx   
+    
+#above settings are for Multical 401, use following for MC66C
+    #data_bits: 7
+    #parity: EVEN
+    #stop_bits: 2
 
 #Multical Custom Sensor (first variable is update interval in ms; 3600000 is 1 hour)
 custom_component:
